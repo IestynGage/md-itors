@@ -4,8 +4,8 @@
  */
 
 interface FileRoom {
-  fileName: string;
-  usersIds: string[];
+	fileName: string;
+	usersIds: string[];
 }
 
 // function to enter room. Also includes exiting the last room...
