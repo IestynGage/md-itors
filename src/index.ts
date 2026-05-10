@@ -1,34 +1,39 @@
-const PORT_NUMBER = 8080;
-const DOMAIN = "0.0.0.0";
+const indexPath = new URL("./index.html", import.meta.url);
 
-Bun.serve({
-	port: PORT_NUMBER,
-	hostname: DOMAIN,
-	routes: {
-		"/api/status": new Response("OK"),
-		"/socket/markdown": (req, server) => {
-			// upgrade the request to a WebSocket
-			if (server.upgrade(req)) {
-				return; // do not return a Response
-			}
-			return new Response("Upgrade failed", { status: 500 });
-		},
-	},
-	fetch(req, server) {
-		// upgrade the request to a WebSocket
-		if (server.upgrade(req)) {
-			return; // do not return a Response
-		}
-		return new Response("Upgrade failed", { status: 500 });
-	},
-	websocket: {
-		message(ws, message) {}, // a message is received
-		open(ws: Bun.ServerWebSocket<undefined>) {
-			console.log(ws.data);
-		}, // a socket is opened
-		close(ws, code, message) {}, // a socket is closed
-		drain(ws) {}, // the socket is ready to receive more data
-	},
+// index.ts
+const server = Bun.serve({
+  port: 3000,
+
+  fetch(req, server) {
+    const url = new URL(req.url);
+
+    if (url.pathname === "/ws") {
+      const success = server.upgrade(req);
+      if (success) return undefined;
+      return new Response("WebSocket upgrade failed", { status: 400 });
+    }
+
+    // Serve the HTML file
+    return new Response(Bun.file(indexPath));
+  },
+
+  websocket: {
+    open(ws) {
+      console.log("Client connected");
+      ws.send("Welcome! You are connected to Bun WebSocket server.");
+    },
+
+    message(ws, message) {
+      console.log("Received:", message);
+
+      // Echo back + broadcast-style behavior
+      ws.send(`Server echo: ${message}`);
+    },
+
+    close() {
+      console.log("Client disconnected");
+    },
+  },
 });
 
-console.log(`Starting markdown online editor on ${DOMAIN}:${PORT_NUMBER}`);
+console.log(`Server running at http://${server.hostname}:${server.port}`);
