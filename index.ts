@@ -12,7 +12,7 @@ Bun.serve({
         return; // do not return a Response
       }
       return new Response("Upgrade failed", { status: 500 });
-    }
+    },
   },
   fetch(req, server) {
     // upgrade the request to a WebSocket
