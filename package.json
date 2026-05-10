@@ -8,8 +8,8 @@
     "prettier": "bunx prettier . --write"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "prettier": "3.8.3"
+    "@biomejs/biome": "^2.4.15",
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
