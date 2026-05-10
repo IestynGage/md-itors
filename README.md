@@ -1,15 +1,20 @@
-# my-app
+# md-itors
 
-To install dependencies:
+Edit makrdown files with your friends & family!
+Bun based server that allows multiplie users to edit a single markdown file
+
+## Requirements
+
+- Bun
+
+## Getting started
 
 ```bash
 bun install
+
+# Run using
+bun run dev
+
+# Additional commands:
+bun run prettier # Fix all prettier mistakes
 ```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.3.13. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
