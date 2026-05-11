@@ -1,5 +1,10 @@
+import { FileRoom } from "./FileRoom";
+import { parseMessage } from "./message";
+
 const indexPath = new URL("./index.html", import.meta.url);
 
+
+const fileRoom = new FileRoom();
 // index.ts
 const server = Bun.serve({
   port: 3000,
@@ -19,15 +24,17 @@ const server = Bun.serve({
 
   websocket: {
     open(ws) {
-      console.log("Client connected");
-      ws.send("Welcome! You are connected to Bun WebSocket server.");
+      const userId = 'user' + fileRoom.users.size;
+      console.log(`Client ${userId} connected`);
+      ws.send(`Welcome ${userId}! You are connected to Bun WebSocket server.`);
+      fileRoom.addUser(userId, ws);
     },
 
     message(ws, message) {
-      console.log("Received:", message);
+      // const event = parseMessage(message);
 
       // Echo back + broadcast-style behavior
-      ws.send(`Server echo: ${message}`);
+      fileRoom.broadcast(`Server echo: ${message}`)
     },
 
     close() {
