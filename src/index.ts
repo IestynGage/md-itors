@@ -5,45 +5,42 @@ import homepage from "./index.html";
 const fileRoom = new FileRoom();
 
 const server = Bun.serve({
-  development: true,
-  port: 3000,
-  routes: {
-    "/": homepage
-  },
-  fetch(req, server) {
-    const url = new URL(req.url);
+	development: true,
+	port: 3000,
+	routes: {
+		"/": homepage,
+	},
+	fetch(req, server) {
+		const url = new URL(req.url);
 
-    if (url.pathname === "/ws") {
-      const success = server.upgrade(req);
-      if (success) return undefined;
-      return new Response("WebSocket upgrade failed", { status: 400 });
-    }
+		if (url.pathname === "/ws") {
+			const success = server.upgrade(req);
+			if (success) return undefined;
+			return new Response("WebSocket upgrade failed", { status: 400 });
+		}
 
-    
+		return new Response();
+	},
 
-    // Serve the HTML file
-    return new Response();
-  },
+	websocket: {
+		open(ws) {
+			const userId = "user" + fileRoom.users.size;
+			console.log(`Client ${userId} connected`);
+			ws.send(`Welcome ${userId}! You are connected to Bun WebSocket server.`);
+			fileRoom.addUser(userId, ws);
+		},
 
-  websocket: {
-    open(ws) {
-      const userId = 'user' + fileRoom.users.size;
-      console.log(`Client ${userId} connected`);
-      ws.send(`Welcome ${userId}! You are connected to Bun WebSocket server.`);
-      fileRoom.addUser(userId, ws);
-    },
+		message(ws, message) {
+			// const event = parseMessage(message);
 
-    message(ws, message) {
-      // const event = parseMessage(message);
+			// Echo back + broadcast-style behavior
+			fileRoom.broadcast(`Server echo: ${message}`);
+		},
 
-      // Echo back + broadcast-style behavior
-      fileRoom.broadcast(`Server echo: ${message}`)
-    },
-
-    close() {
-      console.log("Client disconnected");
-    },
-  },
+		close(ws) {
+			console.log("Client disconnected");
+		},
+	},
 });
 
 console.log(`Server running at http://${server.hostname}:${server.port}`);
