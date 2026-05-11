@@ -1,14 +1,15 @@
 import { FileRoom } from "./FileRoom";
-import { parseMessage } from "./message";
+import homepage from "./index.html";
 
-const indexPath = new URL("./index.html", import.meta.url);
-
-
+// const indexPath = new URL("./index.html", import.meta.url);
 const fileRoom = new FileRoom();
-// index.ts
-const server = Bun.serve({
-  port: 3000,
 
+const server = Bun.serve({
+  development: true,
+  port: 3000,
+  routes: {
+    "/": homepage
+  },
   fetch(req, server) {
     const url = new URL(req.url);
 
@@ -18,8 +19,10 @@ const server = Bun.serve({
       return new Response("WebSocket upgrade failed", { status: 400 });
     }
 
+    
+
     // Serve the HTML file
-    return new Response(Bun.file(indexPath));
+    return new Response();
   },
 
   websocket: {
