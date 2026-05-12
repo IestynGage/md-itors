@@ -15,7 +15,7 @@
       overflow-y: auto;
       margin-bottom: 10px;
     }
-    input {
+    textarea {
       width: 300px;
       padding: 8px;
     }
@@ -30,7 +30,8 @@
 
   <div id="log"></div>
 
-  <input id="msg" placeholder="Type a message..." />
+  <textarea id="msg" type="text" placeholder="Type a message..." >
+  </textarea>
   <button onclick="sendMsg()">Send</button>
 
   <script>
@@ -52,11 +53,17 @@
 
     ws.onmessage = (event) => {
       addLine("Server: " + event.data);
+      updateBox(event.data);
     };
 
     ws.onclose = () => {
       addLine("Disconnected from server");
     };
+
+    function updateBox(newValue) {
+      const input = document.getElementById("msg");
+      input.value = newValue;
+    }
 
     function sendMsg() {
       const input = document.getElementById("msg");
@@ -66,7 +73,6 @@
 
       ws.send(value);
       addLine("You: " + value);
-      input.value = "";
     }
   </script>
 

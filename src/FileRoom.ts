@@ -34,11 +34,11 @@ export class FileRoom {
 
 	broadcast(message: string) {
 		this.users.forEach((user, id, map) => {
-			user.webSocket.send(`Server echo: ${message}`);
+			user.webSocket.send(`${message}`);
 		});
 	}
 
-	// putText()
+	// Clean all websockets...
 }
 
 class User {

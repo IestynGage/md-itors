@@ -1,5 +1,6 @@
 import { FileRoom } from "./FileRoom";
-import homepage from "./index.html";
+import homepage from "./frontend/index.html";
+import spa from "./frontend/spa.html";
 
 // const indexPath = new URL("./index.html", import.meta.url);
 const fileRoom = new FileRoom();
@@ -9,6 +10,7 @@ const server = Bun.serve({
 	port: 3000,
 	routes: {
 		"/": homepage,
+    "/spa": spa
 	},
 	fetch(req, server) {
 		const url = new URL(req.url);
@@ -34,7 +36,7 @@ const server = Bun.serve({
 			// const event = parseMessage(message);
 
 			// Echo back + broadcast-style behavior
-			fileRoom.broadcast(`Server echo: ${message}`);
+			fileRoom.broadcast(`${message}`);
 		},
 
 		close(ws) {
