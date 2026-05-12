@@ -5,6 +5,8 @@ import spa from "./frontend/spa.html";
 // const indexPath = new URL("./index.html", import.meta.url);
 const fileRoom = new FileRoom();
 
+export type BunSocket = Bun.ServerWebSocket<{ socketId: string; }>
+
 const server = Bun.serve({
 	development: true,
 	port: 3000,
@@ -16,7 +18,11 @@ const server = Bun.serve({
 		const url = new URL(req.url);
 
 		if (url.pathname === "/ws") {
-			const success = server.upgrade(req);
+      const success = server.upgrade(req, {
+        data: {
+          socketId: `user-${Math.floor(Math.random() * 1_000)}`,
+        },
+      });
 			if (success) return undefined;
 			return new Response("WebSocket upgrade failed", { status: 400 });
 		}
@@ -25,22 +31,21 @@ const server = Bun.serve({
 	},
 
 	websocket: {
+    data: {} as { socketId: string },
 		open(ws) {
-			const userId = "user" + fileRoom.users.size;
+			const userId = ws.data.socketId;
 			console.log(`Client ${userId} connected`);
 			ws.send(`Welcome ${userId}! You are connected to Bun WebSocket server.`);
 			fileRoom.addUser(userId, ws);
+      // TODO broadcast current file
 		},
 
 		message(ws, message) {
-			// const event = parseMessage(message);
-
-			// Echo back + broadcast-style behavior
 			fileRoom.broadcast(`${message}`);
 		},
 
 		close(ws) {
-			console.log("Client disconnected");
+			fileRoom.removeUser(ws.data.socketId);
 		},
 	},
 });

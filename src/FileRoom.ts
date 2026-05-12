@@ -1,6 +1,9 @@
 // TODO add HMR cleaning function for the ws.
 // It needs to close all the sockets...
 
+import type { BunSocket } from ".";
+import { EventType, type NewUserEvent, type UserLeaveEvent } from "./broadcast-message";
+
 /**
  * When 1 or more users are looking at a file,
  * the collection of users are in a file room.
@@ -26,8 +29,26 @@ export class FileRoom {
 		console.log("asdasd");
 	}
 
-	addUser(username: string, socket: Bun.ServerWebSocket) {
+	addUser(username: string, socket: BunSocket) {
 		this.users.getOrInsert(username, new User(username, socket));
+		
+		const newUserEvent:NewUserEvent = {
+			type: EventType.UserJoin,
+			user: username
+		}
+		this.broadcast(JSON.stringify(newUserEvent));
+	}
+
+	removeUser(username: string) {
+		const user = this.users.get(username);
+		if (user) {
+			user.webSocket.close();	
+		}
+		const removeUserEvent:UserLeaveEvent = {
+			type: EventType.UserLeave,
+			user: username
+		}
+		this.broadcast(JSON.stringify(removeUserEvent));
 	}
 
 	cursorMove(username: string, newCursorLocation: Location) {}
@@ -43,9 +64,9 @@ export class FileRoom {
 
 class User {
 	username: string;
-	webSocket: Bun.ServerWebSocket;
+	webSocket: BunSocket;
 
-	constructor(username: string, webSocket: Bun.ServerWebSocket) {
+	constructor(username: string, webSocket: BunSocket) {
 		this.username = username;
 		this.webSocket = webSocket;
 	}
