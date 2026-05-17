@@ -53,10 +53,31 @@ export class FileRoom {
 
 	cursorMove(username: string, newCursorLocation: Location) {}
 
-	broadcast(message: string) {
-		this.users.forEach((user, id, map) => {
-			user.webSocket.send(`${message}`);
-		});
+	broadcast(message: string | Buffer<ArrayBuffer>) {
+		if (typeof message === 'string') {
+			const a = JSON.parse(message);
+			console.log(a);
+
+			if (a.type && typeof a.type === 'string') {
+				switch (a.type) {
+					case 'CarrotMove':
+						this.users.forEach((user, id, map) => {
+							user.webSocket.send(`${message}`);
+						});
+						break;
+					default:
+						this.users.forEach((user, id, map) => {
+							user.webSocket.send(`${message}`);
+						});
+						break;
+				}
+			}
+		}
+		// const msg = JSON.parse(message);
+		// console.log(msg)
+		// this.users.forEach((user, id, map) => {
+		// 	user.webSocket.send(`${message}`);
+		// });
 	}
 
 	// Clean all websockets...

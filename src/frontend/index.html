@@ -63,7 +63,16 @@
 
     ws.onmessage = (event) => {
       addLine("Server: " + event.data);
-      updateBox(event.data);
+      console.log(event.data)
+      const a = JSON.parse(event.data)
+      switch(a.type) {
+        case 'CarrotMove':
+          console.log('Hello')
+          break;
+        default:
+          updateBox(event.data);
+          break;
+      }
     };
 
     ws.onclose = () => {
@@ -78,6 +87,13 @@
 
     msgTextArea.addEventListener('selectionchange', (event) => {
       console.log(`${msgTextArea.selectionStart} ${msgTextArea.selectionEnd}`);
+
+      ws.send(JSON.stringify({
+        "type":"CarrotMove",
+        "startIndex": msgTextArea.selectionStart,
+        "endIndex": msgTextArea.selectionEnd
+
+      }));
     })
     
     function sendMsg() {

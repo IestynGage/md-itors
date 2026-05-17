@@ -35,7 +35,7 @@ const server = Bun.serve({
 		open(ws) {
 			const userId = ws.data.socketId;
 			console.log(`Client ${userId} connected`);
-			ws.send(`Welcome ${userId}! You are connected to Bun WebSocket server.`);
+			// ws.send(`Welcome ${userId}! You are connected to Bun WebSocket server.`);
 			fileRoom.addUser(userId, ws);
       // TODO broadcast current file
 		},
