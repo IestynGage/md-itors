@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Bun WebSocket Demo</title>
+  <title>md-itors</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -25,19 +25,38 @@
       width: 100%;
 
     }
+    #text-area {
+      border: 1px solid #ccc;
+      height: 200px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      width: 100%;
+      padding: 4px;
+    }
     button {
       padding: 8px 12px;
+    }
+    .line {
+      border: 0px;
+      height: 15px;
+      width: calc(100% - 8px);
+      overflow: hidden;
+      margin: 0 0 2px 0;
+      padding: 4px;
+      resize: none;
     }
   </style>
 </head>
 <body>
 
-  <h2>Bun WebSocket Example</h2>
+  <h2>md-itors</h2>
 
   <div id="log"></div>
 
-  <textarea id="msg" type="text" placeholder="Type a message..." >
-  </textarea>
+
+  <div id="text-area">
+
+  </div>
 
   <br/>
 
@@ -45,13 +64,55 @@
 
   <script>
     const log = document.getElementById("log");
-    const msgTextArea = document.getElementById("msg");
+    const textArea = document.getElementById("text-area");
+
+    let lines = []
+
+    function addStorageLine(afterId, content){
+
+      if (afterId === undefined) {
+        lines = [{id:0, content: content}]
+      }
+      else {
+        lines.push({id: afterId, content: content});
+        addLine("newLine");
+      }
+    }
 
     function addLine(text) {
       const div = document.createElement("div");
       div.textContent = text;
       log.appendChild(div);
       log.scrollTop = log.scrollHeight;
+    }
+
+
+    addStorageLine(0, 'Hello');
+    addStorageLine(1, 'world');
+    renderMarkdown();
+
+    function renderMarkdown(lineToFocus) {
+      textArea.innerHTML = ""
+      addLine("renderMarkdown");
+      let divToFocus = null;
+      lines.forEach((line,i) => {
+        const div = document.createElement("textarea");
+        div.id = `lineN${i}`;
+        div.className = "line"
+        div.innerHTML = line.content;
+        textArea.appendChild(div);
+
+        console.log(`${line.id} == ${lineToFocus}`);
+        if (lineToFocus === line.id) {
+          console.log("here")
+          divToFocus = div;
+        }
+      });
+
+      if (divToFocus !== null) {
+        divToFocus.focus();
+        console.log('focus')
+      }
     }
 
     // Connect to Bun WebSocket server
@@ -80,21 +141,33 @@
     };
 
     function updateBox(newValue) {
-      const input = document.getElementById("msg");
-      input.value = newValue;
+      // textArea = newValue;
     }
 
 
-    msgTextArea.addEventListener('selectionchange', (event) => {
-      console.log(`${msgTextArea.selectionStart} ${msgTextArea.selectionEnd}`);
-
+    textArea.addEventListener('selectionchange', (event) => {
+      console.log(`${event.target.selectionStart} ${event.target.selectionEnd}`);
+      // addLine('lineN' + event.target.selectionStart);
+      
       ws.send(JSON.stringify({
         "type":"CarrotMove",
-        "startIndex": msgTextArea.selectionStart,
-        "endIndex": msgTextArea.selectionEnd
+        "startIndex": event.target.selectionStart,
+        "endIndex": event.target.selectionEnd
 
       }));
     })
+
+    textArea.addEventListener('keydown', (event) => {
+      const value = event.target.value;
+      addLine("event" + event.key)
+      if (event.key === 'Enter' || event.keyCode === 13) {
+        addStorageLine(lines.length, "");
+        renderMarkdown(lines.length - 1);
+      }
+      // I
+      addLine(`onInput ${event.data}`);
+      addLine(`data ${event.inputType}`);
+    });
     
     function sendMsg() {
       const input = document.getElementById("msg");
