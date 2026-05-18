@@ -96,7 +96,8 @@
       addLine("renderMarkdown");
       let divToFocus = null;
       lines.forEach((line,i) => {
-        const div = document.createElement("textarea");
+        const div = document.createElement("div");
+        div.contentEditable=true;
         div.id = `lineN${i}`;
         div.className = "line"
         div.innerHTML = line.content;
@@ -159,10 +160,23 @@
 
     textArea.addEventListener('keydown', (event) => {
       const value = event.target.value;
-      addLine("event" + event.key)
+      addLine("event" + event.key);
+
       if (event.key === 'Enter' || event.keyCode === 13) {
+        addLine(event.target.id)
         addStorageLine(lines.length, "");
         renderMarkdown(lines.length - 1);
+      }
+      else if(event.key === 'ArrowDown') {
+        const nextElem = event.target.nextElementSibling;
+        if (nextElem) {
+          nextElem.focus();
+        }
+      } else if (event.key === 'ArrowUp') {
+        const prevElem = event.target.previousElementSibling;
+        if (prevElem) {
+          prevElem.focus();
+        }
       }
       // I
       addLine(`onInput ${event.data}`);
