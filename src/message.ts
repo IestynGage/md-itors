@@ -1,7 +1,7 @@
 enum MessageType {
-	CURSOR,
-	EDIT,
-	OTHER,
+	CURSOR = 'cursor',
+	EDIT = 'edit',
+	OTHER = 'other',
 }
 
 function messageType(message: string): MessageType {

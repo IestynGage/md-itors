@@ -68,14 +68,20 @@
 
     let lines = []
 
-    function addStorageLine(afterId, content){
+    function addStorageLine(afterId, id, content){
 
       if (afterId === undefined) {
         lines = [{id:0, content: content}]
       }
       else {
-        lines.push({id: afterId, content: content});
-        addLine("newLine");
+        // lines.push({id: id, content: content});
+        const afterIndex = lines.findIndex(x => x.id == afterId) + 1;
+        console.log('afterIndex', afterIndex)
+        lines = [
+            ...lines.slice(0, afterIndex),
+            {id: id, content: content},
+            ...lines.slice(afterIndex)
+        ];
       }
     }
 
@@ -87,18 +93,19 @@
     }
 
 
-    addStorageLine(0, 'Hello');
-    addStorageLine(1, 'world');
+    addStorageLine(undefined, undefined, 'world');
+    addStorageLine(0, 1, 'Hello');
     renderMarkdown();
 
     function renderMarkdown(lineToFocus) {
       textArea.innerHTML = ""
       addLine("renderMarkdown");
       let divToFocus = null;
+      console.log(lines);
       lines.forEach((line,i) => {
         const div = document.createElement("div");
         div.contentEditable=true;
-        div.id = `lineN${i}`;
+        div.id = `${line.id}`;
         div.className = "line"
         div.innerHTML = line.content;
         textArea.appendChild(div);
@@ -159,13 +166,16 @@
     })
 
     textArea.addEventListener('keydown', (event) => {
-      const value = event.target.value;
+      const elemId = event.target.id
+      const value = event.key;
       addLine("event" + event.key);
 
       if (event.key === 'Enter' || event.keyCode === 13) {
-        addLine(event.target.id)
-        addStorageLine(lines.length, "");
-        renderMarkdown(lines.length - 1);
+        console.log('event.target.id', elemId)
+        addLine(`newLine with id ${lines.length}, triggered with elem id ${elemId} in array${lines.findIndex(x => x.id == elemId)}`);
+        const newLineId = lines.length;
+        addStorageLine(elemId, newLineId, "");
+        renderMarkdown(newLineId);
       }
       else if(event.key === 'ArrowDown') {
         const nextElem = event.target.nextElementSibling;
@@ -177,6 +187,13 @@
         if (prevElem) {
           prevElem.focus();
         }
+      } else {
+        // Deal with delete and replace characters later
+        let line = lines.findIndex(v => v.id == elemId);
+        console.log('lines[line]', lines[line])
+        console.log('a + a', lines[line].content + value)
+        lines[line] = { id: lines[line].id, content: lines[line].content + value };
+        console.log('new lines', lines)
       }
       // I
       addLine(`onInput ${event.data}`);
