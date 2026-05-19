@@ -103,7 +103,7 @@
       let divToFocus = null;
       console.log(lines);
       lines.forEach((line,i) => {
-        const div = document.createElement("div");
+        const div = document.createElement("textarea");
         div.contentEditable=true;
         div.id = `${line.id}`;
         div.className = "line"
@@ -153,16 +153,29 @@
     }
 
 
-    textArea.addEventListener('selectionchange', (event) => {
-      console.log(`${event.target.selectionStart} ${event.target.selectionEnd}`);
-      // addLine('lineN' + event.target.selectionStart);
-      
-      ws.send(JSON.stringify({
-        "type":"CarrotMove",
-        "startIndex": event.target.selectionStart,
-        "endIndex": event.target.selectionEnd
+    let carrotPosition = [];
+    let focusedItem = null;
 
-      }));
+    function recordCarrotPosition(event) {
+      console.log(`$carrot {event.target.selectionStart} ${event.target.selectionEnd}`);
+      // addLine('lineN' + event.target.selectionStart);
+      carrotPosition = [event.target.selectionStart, event.target.selectionEnd];
+        ws.send(JSON.stringify({
+          "type":"CarrotMove",
+          "startIndex": event.target.selectionStart,
+          "endIndex": event.target.selectionEnd
+        }));
+    }
+
+    document.addEventListener('focusin', (event) => {
+      console.log('focusin', event.target.id)
+      
+      if (focusedItem !== null) {
+        focusedItem.removeEventListener('selectionchange', recordCarrotPosition);
+      }
+      event.target.addEventListener('selectionchange', recordCarrotPosition);
+
+      focusedItem = event.target;
     })
 
     textArea.addEventListener('keydown', (event) => {
@@ -171,13 +184,21 @@
       addLine("event" + event.key);
 
       if (event.key === 'Enter' || event.keyCode === 13) {
-        console.log('event.target.id', elemId)
-        addLine(`newLine with id ${lines.length}, triggered with elem id ${elemId} in array${lines.findIndex(x => x.id == elemId)}`);
+        event.preventDefault();
+        event.stopPropagation();
+        // Does 2 things here: 
+        // * Moves the text right of the caret to the new line.
+        // * Deletes the currently highlighted text.
         const newLineId = lines.length;
-        addStorageLine(elemId, newLineId, "");
+
+        const currentLine = lines.findIndex(x => x.id == elemId);
+        const newLineContent = lines[currentLine].content.slice(carrotPosition[1]);
+        lines[currentLine] = { id: lines[currentLine].id, content: lines[currentLine].content.slice(0, carrotPosition[0])}
+
+        addStorageLine(elemId, newLineId, newLineContent);
         renderMarkdown(newLineId);
       }
-      else if(event.key === 'ArrowDown') {
+      else if(closed === 'ArrowDown') {
         const nextElem = event.target.nextElementSibling;
         if (nextElem) {
           nextElem.focus();
