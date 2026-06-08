@@ -208,13 +208,34 @@
         if (prevElem) {
           prevElem.focus();
         }
-      } else {
+      }
+      else if (event.key === 'Backspace') {
+        console.log("backspace");
+        if (carrotPosition[0] === carrotPosition[1] && carrotPosition[0] === 0) {
+          const prevElemId = event.target.previousElementSibling.id;
+          addLine("here")
+          let lineIndex = lines.findIndex(v => v.id == elemId);
+          addLine("here" + lineIndex);
+          lines = [ ...lines.slice(0, lineIndex), ...lines.slice(lineIndex+1)];
+          renderMarkdown();
+          if (prevElemId) { 
+                    event.preventDefault();// move this to the top of THIS function
+        event.stopPropagation();
+            console.log('aboute to fixus')
+            const prevLine = document.getElementById(prevElemId);
+            prevLine.setSelectionRange(prevLine.value.length, prevLine.value.length);
+            prevLine.focus();
+            // combine "current line" with this line if deleting line with content.
+          }
+        }
+      }
+      else if (event.keyCode > 64 && event.keyCode < 90) {
         // Deal with delete and replace characters later
         let line = lines.findIndex(v => v.id == elemId);
-        console.log('lines[line]', lines[line])
-        console.log('a + a', lines[line].content + value)
+        // console.log('lines[line]', lines[line])
+        // console.log('a + a', lines[line].content + value)
         lines[line] = { id: lines[line].id, content: lines[line].content + value };
-        console.log('new lines', lines)
+        // console.log('new lines', lines)
       }
       // I
       addLine(`onInput ${event.data}`);
