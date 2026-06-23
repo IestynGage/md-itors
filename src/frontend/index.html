@@ -198,7 +198,7 @@
         addStorageLine(elemId, newLineId, newLineContent);
         renderMarkdown(newLineId);
       }
-      else if(closed === 'ArrowDown') {
+      else if(event.key === 'ArrowDown') {
         const nextElem = event.target.nextElementSibling;
         if (nextElem) {
           nextElem.focus();
