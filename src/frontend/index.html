@@ -236,6 +236,16 @@
           moveCursorUp(event);
         }
       }
+      else if (event.key === 'ArrowRight') {
+        const length = event.target.innerHTML.length; //TODO check this
+        const nextELem = event.target.nextElementSibling;
+        if (carrotPosition[0] === length) {
+          event.preventDefault();
+          event.stopPropagation();
+          nextELem.setSelectionRange(0, 0);
+          nextELem.focus();
+        }
+      }
       else if (event.keyCode > 64 && event.keyCode < 90) {
         // Deal with delete and replace characters later
         let line = lines.findIndex(v => v.id == elemId);
