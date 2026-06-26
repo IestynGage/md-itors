@@ -3,7 +3,7 @@
 Edit makrdown files with your friends & family!
 Bun based server that allows multiplie users to edit a single markdown file
 
-The purpose of this project is to educational and is not intended to be production ready.
+The purpose of this project is educational and is not intended to be production ready.
 The MVP of the project is when multiple users can edit a single markdown file at once.
 
 ## Requirements
