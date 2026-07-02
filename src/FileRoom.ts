@@ -26,7 +26,6 @@ export class FileRoom {
 
 	constructor() {
 		this.users = new Map();
-		console.log("asdasd");
 	}
 
 	addUser(username: string, socket: BunSocket) {
@@ -73,14 +72,7 @@ export class FileRoom {
 				}
 			}
 		}
-		// const msg = JSON.parse(message);
-		// console.log(msg)
-		// this.users.forEach((user, id, map) => {
-		// 	user.webSocket.send(`${message}`);
-		// });
 	}
-
-	// Clean all websockets...
 }
 
 class User {
