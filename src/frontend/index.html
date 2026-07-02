@@ -231,19 +231,13 @@
       }
       else if (event.key === 'ArrowLeft') {
         if (carrotPosition[0] === 0) {
-          event.preventDefault();
-          event.stopPropagation();
           moveCursorUp(event);
         }
       }
       else if (event.key === 'ArrowRight') {
         const length = event.target.innerHTML.length; //TODO check this
-        const nextELem = event.target.nextElementSibling;
-        if (carrotPosition[0] === length) {
-          event.preventDefault();
-          event.stopPropagation();
-          nextELem.setSelectionRange(0, 0);
-          nextELem.focus();
+        if (carrotPosition[1] === length) {
+          moveCursorDown(event);
         }
       }
       else if (event.keyCode > 64 && event.keyCode < 90) {
@@ -264,6 +258,18 @@
       if (prevElem) {
         prevElem.setSelectionRange(prevElem.value.length, prevElem.value.length);
         prevElem.focus();
+                  event.preventDefault();
+          event.stopPropagation();
+      }
+    }
+
+    function moveCursorDown(event) {
+      const nextELem = event.target.nextElementSibling;
+      if (nextELem) {
+        nextELem.setSelectionRange(0, 0);
+        nextELem.focus();
+        event.preventDefault();
+        event.stopPropagation();
       }
     }
     
