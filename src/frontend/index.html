@@ -176,6 +176,12 @@
       focusedItem = event.target;
     })
 
+    markdownDiv.addEventListener('click', (event) => {
+      const elemId = event.target.id
+      const value = event.key;
+      carrotPosition = [event.target.selectionStart, event.target.selectionEnd];
+    })
+
     markdownDiv.addEventListener('keydown', (event) => {
       const elemId = event.target.id
       const value = event.key;
