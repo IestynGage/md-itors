@@ -64,7 +64,7 @@
 
   <script>
     const log = document.getElementById("log");
-    const textArea = document.getElementById("text-area");
+    const markdownDiv = document.getElementById("text-area");
 
     let lines = []
 
@@ -98,15 +98,14 @@
     renderMarkdown();
 
     function renderMarkdown(lineToFocus) {
-      textArea.innerHTML = ""
+      markdownDiv.innerHTML = ""
       let divToFocus = null;
       lines.forEach((line,i) => {
         const div = document.createElement("textarea");
-        div.contentEditable=true;
         div.id = `${line.id}`;
         div.className = "line"
-        div.innerHTML = line.content;
-        textArea.appendChild(div);
+        div.value = line.content;
+        markdownDiv.appendChild(div);
 
         console.log(`${line.id} == ${lineToFocus}`);
         if (lineToFocus === line.id) {
@@ -177,7 +176,7 @@
       focusedItem = event.target;
     })
 
-    textArea.addEventListener('keydown', (event) => {
+    markdownDiv.addEventListener('keydown', (event) => {
       const elemId = event.target.id
       const value = event.key;
       addLine("event " + event.key);
