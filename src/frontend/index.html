@@ -214,7 +214,6 @@
         }
       }
       else if (event.key === 'Backspace') {
-        console.log("backspace");
         if (carrotPosition[0] === carrotPosition[1] && carrotPosition[0] === 0) {
           const prevElemId = event.target.previousElementSibling.id;
           let lineIndex = lines.findIndex(v => v.id == elemId);
@@ -244,17 +243,22 @@
         }
       }
       else if (event.keyCode > 64 && event.keyCode < 90) {
-        // Deal with delete and replace characters later
         let line = lines.findIndex(v => v.id == elemId);
-        // console.log('lines[line]', lines[line])
-        // console.log('a + a', lines[line].content + value)
-        lines[line] = { id: lines[line].id, content: lines[line].content + value };
-        // console.log('new lines', lines)
+        
+        let content = lines[line].content;
+        const endContent = content.substring(carrotPosition[1]);
+        content = content.substring(0, carrotPosition[0]) + value + endContent;
+        carrotPosition = [carrotPosition[0] + 1, carrotPosition[0] + 1];
+
+        lines[line] = { id: lines[line].id, content: content };
       }
-      // I
       addLine(`onInput ${event.data}`);
       addLine(`data ${event.inputType}`);
     });
+
+    function renderLines() {
+      // TODO
+    }
 
     function moveCursorUp(event) {
       const prevElem = event.target.previousElementSibling;
