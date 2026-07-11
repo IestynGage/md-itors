@@ -237,7 +237,7 @@
         }
       }
       else if (event.key === 'ArrowRight') {
-        const length = event.target.innerHTML.length; //TODO check this
+        const length = event.target.value.length; //TODO check this
         if (carrotPosition[1] === length) {
           moveCursorDown(event);
         }
