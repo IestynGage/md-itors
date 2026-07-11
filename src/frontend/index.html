@@ -242,7 +242,7 @@
           moveCursorDown(event);
         }
       }
-      else if (event.keyCode > 64 && event.keyCode < 90) {
+      else {
         let line = lines.findIndex(v => v.id == elemId);
         
         let content = lines[line].content;
