@@ -98,6 +98,7 @@
     renderMarkdown();
 
     function renderMarkdown(lineToFocus) {
+      // TODO respect cursor
       markdownDiv.innerHTML = ""
       let divToFocus = null;
       lines.forEach((line,i) => {
@@ -214,21 +215,35 @@
         }
       }
       else if (event.key === 'Backspace') {
+        // TODO replace all of this
+        // 
+        // IF deleting line case (AND APPENDING CONTENT?)
+        // DELETE content plus middle content
+        let lineIndex = lines.findIndex(v => v.id == elemId);
+        const content = lines[lineIndex].content;
         if (carrotPosition[0] === carrotPosition[1] && carrotPosition[0] === 0) {
-          const prevElemId = event.target.previousElementSibling.id;
-          let lineIndex = lines.findIndex(v => v.id == elemId);
-          lines = [ ...lines.slice(0, lineIndex), ...lines.slice(lineIndex+1)];
-          renderMarkdown();
-          if (prevElemId) { 
-            event.preventDefault();// move this to the top of THIS function
-            event.stopPropagation();
-            console.log('aboute to fixus')
-            const prevLine = document.getElementById(prevElemId);
-            setElementCursor(prevLine, prevLine.value.length, prevLine.value.length);
-            prevLine.focus();
-            // combine "current line" with this line if deleting line with content.
-          }
         }
+        else if (carrotPosition[0] !== carrotPosition[1]) {
+          // multi select delete
+          lines[lineIndex] = { id: lines[lineIndex].id, content: content.slice(0, carrotPosition[0]) + content.slice(carrotPosition[1]) };
+          renderMarkdown();
+        } else {
+          lines[lineIndex] = { id: lines[lineIndex].id, content: content.slice(0, carrotPosition[0] - 1) + content.slice(carrotPosition[1]) };
+          renderMarkdown(lineIndex);
+        }
+        //   const prevElemId = event.target.previousElementSibling.id;
+        //   let lineIndex = lines.findIndex(v => v.id == elemId);
+        //   lines = [ ...lines.slice(0, lineIndex), ...lines.slice(lineIndex+1)];
+        //   renderMarkdown();
+        //   if (prevElemId) { 
+        //     event.preventDefault();// move this to the top of THIS function
+        //     event.stopPropagation();
+        //     console.log('aboute to fixus')
+        //     const prevLine = document.getElementById(prevElemId);
+        //     setElementCursor(prevLine, prevLine.value.length, prevLine.value.length);
+        //     prevLine.focus();
+        //     // combine "current line" with this line if deleting line with content.
+        //   }
       }
       else if (event.key === 'ArrowLeft') {
         addLine('id ' + event.target.id + ' carrotPosition ' + carrotPosition[0])
@@ -251,13 +266,18 @@
         carrotPosition = [carrotPosition[0] + 1, carrotPosition[0] + 1];
 
         lines[line] = { id: lines[line].id, content: content };
+        // renderLines(v.id);
       }
       addLine(`onInput ${event.data}`);
       addLine(`data ${event.inputType}`);
+      // renderMarkdown();
     });
 
-    function renderLines() {
-      // TODO
+    function renderLines(ids) {
+      ids.forEach(id => {
+        let line = lines.findIndex(v => v.id == elemId);
+        document.getElementById("l" + id).value = line.content;
+      })
     }
 
     function moveCursorUp(event) {
